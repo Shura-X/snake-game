@@ -1,39 +1,45 @@
+
 let canvas = document.querySelector('canvas'); 
 let ctx = canvas.getContext('2d'); 
 
 //console.log(canvas.width)
+let f = 15;		//счётчик новых хвостов змейки
+let x = 0;		//счётчик для итераций анимации
 
-let x = 0;
+let snake = 2;
+
 function drawIt() { 
 	window.requestAnimationFrame(drawIt);  
  	ctx.clearRect(0,0,canvas.width,canvas.height); 
  	
- 	ctx.fillStyle = "#3b3b3b"; 
+ 	ctx.fillStyle = 'red'//"#3b3b3b"; 
 	ctx.fillRect(0, 0, 700, 500); 
 
 	ctx.fillStyle = 'green';
+	ctx.fillRect(100, 100, 50, 50)
 
-	let snake = [
-		ctx.fillRect(x, 50, 15, 15),
-		ctx.fillRect(x+15, 50, 15, 15)
-	]
+	/*if (!snake) {
+		snake = [
+			ctx.fillRect(x, 50, 15, 15),
+			ctx.fillRect(x+15, 50, 15, 15)
+		];
 
-	let f = 15;		//счётчик новых хвостов змейки
+		for (let i = 0; i < snake.length; i++) {
+			snake[i]
+		};
+	}*/
+
 	if (x > canvas.width) {
 		x = 0;
-		f += 15;
-		console.log( f );
-		snake.push( ctx.fillRect(x+f, 50, 15, 15) );
-		console.log(snake.length)
+		snake++;
 	}
 
-	//ctx.snake[0]
-
-	for (let i = 0; i < snake.length; i++) {
-		snake[i]
+	//ctx.fillStyle = 'green';
+	for (let i = 0; i < snake; i++) {
+		ctx.fillRect(x+i*15, 50, 15, 15)
 	}
 
-  	x+=2;
+  	x+=3;
 }
 
 //window.requestAnimationFrame(drawIt)
