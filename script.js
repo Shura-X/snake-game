@@ -1,18 +1,56 @@
 
+/*вариант 2:
+	рисовать змейку не несколькими блокками, 
+	а монолитным прямоугольником, 
+	а при поворотах отрисовывать новый прямоугольник из точки события
+
+	зы: делать в отдельной ветке
+*/
+
+
+
 let canvas = document.querySelector('canvas'); 
 let ctx = canvas.getContext('2d'); 
 
-//console.log(canvas.width)
-let f = 15;		//счётчик новых хвостов змейки
-let x = 0;		//счётчик для итераций анимации
-let n = 50; 		//счётчик для изменений
+let time = 0;		//счётчик для итераций анимации
+let n = 50; 			//счётчик для изменений
 
 let snake = [
 	{ left: 50, top: 50 },
-	{ left: 50, top: 50 }
+	{ left: 50, top: 50 },
+	{ left: 50, top: 50 },
 ];
 
 let coords = null;
+
+let down = function() {
+	let a = 0;
+	for (let i = 0; i < snake.length; i++) {
+		if (snake[i].left >= coords.left) {
+			snake[i].left = coords.left;
+			snake[i].top = n + a * 15;
+			//alert( snake[i].top )
+			//a++
+			alert(a)
+		} else {
+			snake[i].left = time + i * 15;
+		}
+		ctx.fillRect(snake[i].left, snake[i].top, 15, 15);
+		a++;
+	}
+	//time+=1;
+	n+=1
+}
+
+let run = function() {
+	for (let i = 0; i < snake.length; i++) {
+		snake[i].left = time + i * 15;
+		ctx.fillRect(snake[i].left, snake[i].top, 15, 15);
+	}
+	//time+=1;
+}
+
+
 
 
 function drawIt() { 
@@ -24,19 +62,8 @@ function drawIt() {
 
 	ctx.fillStyle = 'green';
 
-	/*if (!snake) {
-		snake = [
-			ctx.fillRect(x, 50, 15, 15),
-			ctx.fillRect(x+15, 50, 15, 15)
-		];
-
-		for (let i = 0; i < snake.length; i++) {
-			snake[i]
-		};
-	}*/
-
 	if (snake[0].left > canvas.width) {
-		x = 0;
+		time = 0;
 		snake.push({
 			left: 50,
 			top: 50
@@ -44,65 +71,27 @@ function drawIt() {
 	}
 
 
-	let run = function(i) {
-		//if (snake[snake.length-1].left < 500) {
-		snake[i].left = x + i * 15;
-		x++
 
-		//значения перезаписываются, потому что рни представлены ввиде объекта и имеют ссылочный тип
 
-		if (snake[snake.length-1].left >= 500) {
-			if (!coords) {
-				coords = {};
-				Object.assign(coords, snake[snake.length-1])
-				console.log('changed')
-			}
+	let event = function(e) {
+		if (e.which != 40) return;
 
-			//alert(coords.left)
-			//console.log(coords.left)
-			
-			if (snake[i].left >= coords.left) {
-				snake[i].left = coords.left;
-				snake[i].top = n + i * 15;
-			}
-			n++
-		}
+		coords = {};
+		Object.assign(coords, snake[snake.length-1]);
 
+		run = down;
 	}
 
-	/*document.body.addEventListener('keydown', function(e) {
-		//alert(typeof e.which)
-		let coords = snake[snake.length-1];
+	document.body.addEventListener('keydown', event)
 
-		switch (e.which) {
 
-			case 40:
-				console.log('case 40')
-				run =  function(i) {
-					let coords = snake[snake.length-1];
-					console.log('snake started')
-					run(i);
-					if (coords.left <= snake[i].left) {
-						snake[i].left = coords.left;
-						snake[i].top = x + i * 15;
-						console.log('direction changed')
-					}
-				}
 
-		}
+	
 
-	});*/
-	//run = fn
+	run()
 
-	//ctx.fillStyle = 'green';
-	for (let i = 0; i < snake.length; i++) {
-		//snake[i].left = x + i * 15
-		run(i);
-		ctx.fillRect(snake[i].left, snake[i].top, 15, 15)
-	}
-
-  	x++;
+  	time+=1;
 
 }
 
-//window.requestAnimationFrame(drawIt)
+window.requestAnimationFrame(drawIt)
