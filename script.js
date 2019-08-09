@@ -13,41 +13,105 @@ let canvas = document.querySelector('canvas');
 let ctx = canvas.getContext('2d'); 
 
 let time = 0;		//счётчик для итераций анимации
-let n = 50; 			//счётчик для изменений
+let counter = 3;
+let border;
+let completed = 0;
 
-let snake = [
-	{ left: 50, top: 50 },
-	{ left: 50, top: 50 },
-	{ left: 50, top: 50 },
-];
+let snake = {
+	x: 50,
+	y: 50,
+	width: 30,
+	height: 15,
+};
 
-let coords = null;
+
+let one = {};
+let two = {
+	width: 15,
+	height: 15
+};
+
+
+
 
 let down = function() {
-	let a = 0;
-	for (let i = 0; i < snake.length; i++) {
-		if (snake[i].left >= coords.left) {
-			snake[i].left = coords.left;
-			snake[i].top = n + a * 15;
-			//alert( snake[i].top )
-			//a++
-			alert(a)
-		} else {
-			snake[i].left = time + i * 15;
+	/*
+		код разбит на 3 этапа
+		задача итератора - прийти, и сделать что-то с уже готовыми значениями
+		поэтому нужно иметь 3 варианта функции:
+		копирование значений в начале, 
+		перерисовка значений в аватарах,
+		движение змейки в штатном режиме
+	*/
+
+	if (completed == 0) {
+		/*
+		здесь копирование аватар змейки ( one )
+		а также задаётся ограничение border
+		*/
+
+		border = snake.x + snake.width;
+
+		for (let key in snake) {
+			one[key] = snake[key]
 		}
-		ctx.fillRect(snake[i].left, snake[i].top, 15, 15);
-		a++;
+
+		ctx.fillRect(snake.x, snake.y, snake.width, snake.height);
+		snake.x+=counter;
+
+		completed = 1	//важно! в конце каждого этапа менять статус
+
+	} else if (completed === 1){			//сначало произвести расчёты.
+											//a потоп уже отрисовывать змейку
+
+		/*
+		здесь постепенно уменньшается значение аватара предыдущей змейки 
+		и увеличивается аватар нововй змейки
+		*/
+	
+		two.x = border-15,
+		two.y = one.y
+
+		two.height+=counter;
+		one.x+=counter
+
+		if (one.width > border - one.x) {
+			one.width = border - one.x
+		}
+
+		ctx.fillRect(one.x, one.y, one.width, one.height);
+		ctx.fillRect(two.x, two.y, two.width, two.height);
+
+		if (one.width <= 0) {
+			/*
+			когда ававтар старой змейки исчезает
+			нужно остановить перерисовку и задать значение нового аватара змейке
+			и остановить вторую фазу функции
+			*/
+
+			for (let key in two) {
+				snake[key] = two[key]
+			}
+
+			completed = true	//важно! в конце каждого этапа менять статус
+		}
+
+	} else if (completed === true) {
+		/*
+		когда все преобразования выполнены
+		выполнение переходит в штатный режим
+		*/
+		ctx.fillRect(snake.x, snake.y, snake.width, snake.height);
+		snake.y+=counter
 	}
-	//time+=1;
-	n+=1
+
 }
 
+
+
 let run = function() {
-	for (let i = 0; i < snake.length; i++) {
-		snake[i].left = time + i * 15;
-		ctx.fillRect(snake[i].left, snake[i].top, 15, 15);
-	}
-	//time+=1;
+	ctx.fillRect(snake.x, snake.y, snake.width, snake.height);
+	snake.x+=counter
 }
 
 
@@ -62,35 +126,64 @@ function drawIt() {
 
 	ctx.fillStyle = 'green';
 
-	if (snake[0].left > canvas.width) {
-		time = 0;
-		snake.push({
-			left: 50,
-			top: 50
-		})
-	}
+	
+	if (snake.x + snake.width > canvas.width) {
+
+		let tail = ( snake.x + snake.width ) - canvas.width;
+		ctx.fillRect(0, snake.y, tail, snake.height);
+
+		if (snake.x >= canvas.width) {
+			snake.x = 0;
+			snake.width += 15
+		}
+ 	}
 
 
+/*
+	if (snake.x+snake.width >= 500) {
+		let one = snake;
+		let border = 500;
+		run = null
+
+		ctx.fillRect(one.x, one.y, one.width, one.height)
+		one.x+=counter;
+		if (one.width > border - one.x) {
+			one.width =  border - one.x 
+		}
+
+		let two = {
+			x: border-15,
+			y: one.y,
+			width: 15,
+			height: 15
+		}
+		ctx.fillRect(two.x, two.x, two.width, two.height);
+		two.height+=counter;
+
+		if (one.width <= 0) {
+			snake = two;
+			run = function() {
+				ctx.fillRect(snake.x, snake.y, snake.width, snake.height);
+				snake.y+=counter
+			}
+		}
+
+	}*/
 
 
 	let event = function(e) {
-		if (e.which != 40) return;
 
-		coords = {};
-		Object.assign(coords, snake[snake.length-1]);
+		switch (e.which) {
+			case 40: 
+				run = down
+		}
 
-		run = down;
 	}
-
-	document.body.addEventListener('keydown', event)
-
-
-
-	
+	document.addEventListener('keydown', event)
 
 	run()
 
-  	time+=1;
+  	time+=counter;
 
 }
 
