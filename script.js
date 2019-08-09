@@ -15,23 +15,21 @@ let ctx = canvas.getContext('2d');
 let time = 0;		//счётчик для итераций анимации
 let counter = 3;
 let border;
-let completed = 0;
+let stage ='left';
 
 let snake = {
 	x: 50,
-	y: 50,
-	width: 30,
+	y: 450,
+	width: 120,
 	height: 15,
 };
 
 
 let one = {};
 let two = {
-	width: 15,
-	height: 15
+	width: 0,
+	height: 0
 };
-
-
 
 
 let down = function() {
@@ -44,7 +42,7 @@ let down = function() {
 		движение змейки в штатном режиме
 	*/
 
-	if (completed == 0) {
+	if (stage == 'left' || stage == 'right') {
 		/*
 		здесь копирование аватар змейки ( one )
 		а также задаётся ограничение border
@@ -59,9 +57,13 @@ let down = function() {
 		ctx.fillRect(snake.x, snake.y, snake.width, snake.height);
 		snake.x+=counter;
 
-		completed = 1	//важно! в конце каждого этапа менять статус
+		//подготовка аватара к использованию 
+		snake.width = 15; //
+		snake.height = 0; //
 
-	} else if (completed === 1){			//сначало произвести расчёты.
+		stage = 1	//важно! в конце каждого этапа менять статус
+
+	} else if (stage === 1){			//сначало произвести расчёты.
 											//a потоп уже отрисовывать змейку
 
 		/*
@@ -69,10 +71,10 @@ let down = function() {
 		и увеличивается аватар нововй змейки
 		*/
 	
-		two.x = border-15,
-		two.y = one.y
+		snake.x = border-15; //
+		snake.y = one.y; //
 
-		two.height+=counter;
+		snake.height+=counter; //
 		one.x+=counter
 
 		if (one.width > border - one.x) {
@@ -80,7 +82,7 @@ let down = function() {
 		}
 
 		ctx.fillRect(one.x, one.y, one.width, one.height);
-		ctx.fillRect(two.x, two.y, two.width, two.height);
+		ctx.fillRect(snake.x, snake.y, snake.width, snake.height); //*4
 
 		if (one.width <= 0) {
 			/*
@@ -89,14 +91,12 @@ let down = function() {
 			и остановить вторую фазу функции
 			*/
 
-			for (let key in two) {
-				snake[key] = two[key]
-			}
+			//for (let key in two) { snake[key] = two[key] }
 
-			completed = true	//важно! в конце каждого этапа менять статус
+			stage = 'down'	//важно! в конце каждого этапа менять статус
 		}
 
-	} else if (completed === true) {
+	} else if (stage === 'down') {
 		/*
 		когда все преобразования выполнены
 		выполнение переходит в штатный режим
@@ -105,7 +105,59 @@ let down = function() {
 		snake.y+=counter
 	}
 
+	/*
+	функция работает, поэтому по аналогии с этой функцией 
+	надо сделать и остальные
+	*/
+
 }
+
+let up = function() {
+	if (stage == 'left' || stage == 'right') {
+		border = snake.x + snake.width;
+
+		for (let key in snake) {
+			one[key] = snake[key]
+		}
+
+		ctx.fillRect(snake.x, snake.y, snake.width, snake.height);
+		snake.x+=counter;
+
+		//подготовка аватара к использованию 
+		snake.width = 15; //
+		snake.height = 0; //
+		snake.y = one.y + 15; //
+
+		stage = 1
+	} else if (stage == 1) {
+
+		snake.x = border-15; //
+		//two.y = one.y;
+
+		snake.y-=counter; //
+		snake.height+=counter //
+		//alert(`${two.y}, ${two.height}`)
+
+		one.x+=counter;
+
+		if (one.width > border - one.x) one.width = border - one.x;
+
+		ctx.fillRect(one.x, one.y, one.width, one.height);
+		ctx.fillRect(snake.x, snake.y, snake.width, snake.height); //*4
+
+		//alert('')
+
+		if (one.width <= 0) {
+			//for (let key in two) { snake[key] = two[key] }
+
+			stage = 'up'
+		}
+	} else if (stage == 'up') {
+		ctx.fillRect(snake.x, snake.y, snake.width, snake.height);
+		snake.y-=counter
+	}
+}
+
 
 
 
@@ -113,6 +165,9 @@ let run = function() {
 	ctx.fillRect(snake.x, snake.y, snake.width, snake.height);
 	snake.x+=counter
 }
+
+
+
 
 
 
@@ -134,48 +189,51 @@ function drawIt() {
 
 		if (snake.x >= canvas.width) {
 			snake.x = 0;
-			snake.width += 15
+			snake.width += 30
 		}
  	}
 
+ 	if (snake.y + snake.height > canvas.height) {
+ 		let tail = ( snake.y + snake.height ) - canvas.height;
+ 		ctx.fillRect(snake.x, 0, snake.width, tail);
 
-/*
-	if (snake.x+snake.width >= 500) {
-		let one = snake;
-		let border = 500;
-		run = null
+ 		if (snake.y >= canvas.height) {
+ 			snake.y = 0;
+ 		} 
 
-		ctx.fillRect(one.x, one.y, one.width, one.height)
-		one.x+=counter;
-		if (one.width > border - one.x) {
-			one.width =  border - one.x 
-		}
+ 	}
 
-		let two = {
-			x: border-15,
-			y: one.y,
-			width: 15,
-			height: 15
-		}
-		ctx.fillRect(two.x, two.x, two.width, two.height);
-		two.height+=counter;
+ 	if (snake.y <= 0) {
+ 		let tail = 0 - snake.y
+ 		//alert(tail)
+ 		ctx.fillRect(snake.x, canvas.height - tail, snake.width, tail);
 
-		if (one.width <= 0) {
-			snake = two;
-			run = function() {
-				ctx.fillRect(snake.x, snake.y, snake.width, snake.height);
-				snake.y+=counter
-			}
-		}
+ 		if (snake.y + snake.height <= 0) {
+ 			snake.y = canvas.height - snake.height
+ 		}
+ 	}
 
-	}*/
+ 	if (one.y <= 0) {
+ 		let tail = 0 - one.y
+ 		//alert(tail)
+ 		ctx.fillRect(one.x, canvas.height - tail, one.width, tail);
+
+ 		if (one.y + one.height <= 0) {
+ 			one.y = canvas.height - one.height
+ 		}
+ 	} 
+ 
 
 
 	let event = function(e) {
 
 		switch (e.which) {
 			case 40: 
-				run = down
+				run = down;
+				break;
+			case 38:
+				run = up;
+				break;
 		}
 
 	}
