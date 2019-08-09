@@ -19,17 +19,17 @@ let stage ='left';
 
 let snake = {
 	x: 50,
-	y: 450,
+	y: 50,
 	width: 120,
 	height: 15,
 };
 
 
 let one = {};
-let two = {
+/*let two = {
 	width: 0,
 	height: 0
-};
+};*/
 
 
 let down = function() {
@@ -105,6 +105,8 @@ let down = function() {
 		snake.y+=counter
 	}
 
+
+
 	/*
 	функция работает, поэтому по аналогии с этой функцией 
 	надо сделать и остальные
@@ -158,6 +160,16 @@ let up = function() {
 	}
 }
 
+let left = function() {
+	if (stage == 'up' || stage == 'down') {
+		for (let key in snake) {
+			one[key] = snake[key]
+		}
+
+		
+	}
+}
+
 
 
 
@@ -185,27 +197,49 @@ function drawIt() {
 	if (snake.x + snake.width > canvas.width) {
 
 		let tail = ( snake.x + snake.width ) - canvas.width;
+		ctx.fillStyle = 'red';
 		ctx.fillRect(0, snake.y, tail, snake.height);
-
+		ctx.fillStyle = 'green';
+		
 		if (snake.x >= canvas.width) {
 			snake.x = 0;
 			snake.width += 30
 		}
+
+		/*let tail = {};
+		for (let key in snake) {
+			tail[key] = snake[key];
+		}
+
+		ctx.fillStyle = 'red';
+		ctx.fillRect(tail.x, tail.y, tail.width, tail.height);
+		tail.x+=counter;
+ 		ctx.fillStyle = '3b3b3b';
+ 		snake.x = 0;*/
+
+ 		//run = 
+ 		//snake.width = 0;
+
+
+ 		//snake.x = 10;
  	}
 
  	if (snake.y + snake.height > canvas.height) {
  		let tail = ( snake.y + snake.height ) - canvas.height;
+ 		ctx.fillStyle = 'red';
  		ctx.fillRect(snake.x, 0, snake.width, tail);
+ 		ctx.fillStyle = 'green';
 
  		if (snake.y >= canvas.height) {
  			snake.y = 0;
- 		} 
+ 		}
+
+
 
  	}
 
  	if (snake.y <= 0) {
  		let tail = 0 - snake.y
- 		//alert(tail)
  		ctx.fillRect(snake.x, canvas.height - tail, snake.width, tail);
 
  		if (snake.y + snake.height <= 0) {
@@ -215,14 +249,15 @@ function drawIt() {
 
  	if (one.y <= 0) {
  		let tail = 0 - one.y
- 		//alert(tail)
  		ctx.fillRect(one.x, canvas.height - tail, one.width, tail);
 
  		if (one.y + one.height <= 0) {
  			one.y = canvas.height - one.height
  		}
  	} 
- 
+
+	//ctx.fillStyle = 'green'; 
+
 
 
 	let event = function(e) {
