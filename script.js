@@ -17,12 +17,12 @@ let counter = 3;
 let border;
 let stage ='left';
 
-let snake = {
+let snake = [ {
 	x: 50,
 	y: 50,
 	width: 120,
 	height: 15,
-};
+} ];
 
 
 let one = {};
@@ -174,8 +174,10 @@ let left = function() {
 
 
 let run = function() {
-	ctx.fillRect(snake.x, snake.y, snake.width, snake.height);
-	snake.x+=counter
+	for (let i = 0; i < snake.length; i++) {
+		ctx.fillRect(snake[i].x, snake[i].y, snake[i].width, snake[i].height);
+		snake[i].x+=counter;
+	}
 }
 
 
@@ -194,36 +196,27 @@ function drawIt() {
 	ctx.fillStyle = 'green';
 
 	
-	if (snake.x + snake.width > canvas.width) {
+	if (snake[snake.length-1].x + snake[snake.length-1].width > canvas.width) {
 
-		let tail = ( snake.x + snake.width ) - canvas.width;
+		/*let tail = ( snake[snake.length-1].x + snake[snake.length-1].width ) - canvas.width;
 		ctx.fillStyle = 'red';
-		ctx.fillRect(0, snake.y, tail, snake.height);
+		ctx.fillRect(0, snake[snake.length-1].y, tail, snake[snake.length-1].height);
 		ctx.fillStyle = 'green';
 		
-		if (snake.x >= canvas.width) {
-			snake.x = 0;
-			snake.width += 30
-		}
+		if (snake[snake.length-1].x >= canvas.width) {
+			snake[snake.length-1].x = 0;
+			snake[snake.length-1].width += 30
+		}*/
 
-		/*let tail = {};
-		for (let key in snake) {
-			tail[key] = snake[key];
-		}
-
-		ctx.fillStyle = 'red';
-		ctx.fillRect(tail.x, tail.y, tail.width, tail.height);
-		tail.x+=counter;
- 		ctx.fillStyle = '3b3b3b';
- 		snake.x = 0;*/
-
- 		//run = 
- 		//snake.width = 0;
-
-
- 		//snake.x = 10;
+		snake.push( {
+			x: 0,
+			y: snake[snake.length-1].y,
+			width: 0,
+			height
+		} )
  	}
 
+ 	/*
  	if (snake.y + snake.height > canvas.height) {
  		let tail = ( snake.y + snake.height ) - canvas.height;
  		ctx.fillStyle = 'red';
@@ -272,7 +265,7 @@ function drawIt() {
 		}
 
 	}
-	document.addEventListener('keydown', event)
+	//document.addEventListener('keydown', event)*/
 
 	run()
 
