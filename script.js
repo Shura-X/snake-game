@@ -38,7 +38,9 @@ let check_presence = function() {
 					checker = false
 				}
 			}
-		} console.log(count)
+		} 
+
+		if (!checker) alert('false')
 
 		//cхема см блокнот
 		//обънкт данных с координатами
@@ -119,40 +121,46 @@ let run = function() {
 
 //проверяет пересечения головной змеи с целью
 let check_in = function() {
-	ctx.rect(snake[snake.length-1].x, snake[snake.length-1].y, snake[snake.length-1].width, snake[snake.length-1].height );
+	//рисует очертания фигуры головной змейки
+	ctx.rect( snake[snake.length-1].x, snake[snake.length-1].y, snake[snake.length-1].width, snake[snake.length-1].height );
 
 	switch (snake[snake.length-1].direction) {
+		//проверяет, есть ли точки угла в прямоугольнике змеи
 		case 'right':
 			if ( ctx.isPointInPath(angles.right.x, angles.right.y) ||
 				ctx.isPointInPath(angles.top.x, angles.top.y) ) {
-				snake[snake.length-1].width += 15;
 				checker = false;
+				snake[snake.length-1].width += 15;
+				alert('check')
 			}
 			break;
 
 		case 'down':
 			if ( ctx.isPointInPath(angles.down.x, angles.down.y) ||
 				ctx.isPointInPath( angles.right.x, angles.right.y )) {
-				snake[snake.length-1].height += 15;
 				checker = false;
+				snake[snake.length-1].height += 15;
+				alert('check')
 			}
 			break;
 
 		case 'left':
 			if ( ctx.isPointInPath( angles.left.x, angles.left.y ) ||
 				ctx.isPointInPath( angles.down.x, angles.down.y )) {
+				checker = false;
 				snake[snake.length-1].width += 15;
 				snake[snake.length-1].x -= 15;
-				checker = false;
+				alert('check')
 			}
 			break;
 
 		case 'top':
 			if ( ctx.isPointInPath( angles.top.x, angles.top.y ) ||
 				ctx.isPointInPath( angles.left.x, angles.left.y )) {
+				checker = false;
 				snake[snake.length-1].height += 15;
 				snake[snake.length-1].y -= 15;
-				checker = false;
+				alert('check')
 			}
 			break;
 	}
@@ -269,6 +277,19 @@ function drawIt() {
 	
 	run();
 
+	try {
+		check_presence()
+
+		if (!checker) throw new Error()
+	} catch(e) {
+		alert('false')
+	}
+
+
+	check_in()
+
+	check_presence()
+
 	//right
 	if (snake[snake.length-1].x + snake[snake.length-1].width >= canvas.width && snake[snake.length-1].direction == 'right') {
 		snake.push( {
@@ -318,22 +339,20 @@ function drawIt() {
 	}
 
 
-	check_presence()
-
-	check_in()
 
 
 
-	ctx.fillStyle = 'red';
-	ctx.fillRect(x, y, 15, 15);
-	ctx.fillStyle = 'green';
+	if (checker) {
+		ctx.fillStyle = 'red';
+		ctx.fillRect(x, y, 15, 15);
+		ctx.fillStyle = 'green';
+	}
 
 	for (let i = 0; i < snake.length; i++) {
 		ctx.fillRect(snake[i].x, snake[i].y, snake[i].width, snake[i].height)
 	}
 
-	//console.log(snake[snake.length-1].height)
-
+	//console.log(checker)
 }
 
-//window.requestAnimationFrame(drawIt)
+window.requestAnimationFrame(drawIt)
