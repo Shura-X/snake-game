@@ -8,180 +8,162 @@
 */
 
 
-
 let canvas = document.querySelector('canvas'); 
 let ctx = canvas.getContext('2d'); 
 
 let time = 0;		//счётчик для итераций анимации
 let counter = 3;
-let border;
-let stage ='left';
+//let border;
 
-let snake = {
+let snake = [ {
 	x: 50,
-	y: 50,
+	y: 450,
 	width: 120,
 	height: 15,
-};
-
-
-let one = {};
-/*let two = {
-	width: 0,
-	height: 0
-};*/
-
-
-let down = function() {
-	/*
-		код разбит на 3 этапа
-		задача итератора - прийти, и сделать что-то с уже готовыми значениями
-		поэтому нужно иметь 3 варианта функции:
-		копирование значений в начале, 
-		перерисовка значений в аватарах,
-		движение змейки в штатном режиме
-	*/
-
-	if (stage == 'left' || stage == 'right') {
-		/*
-		здесь копирование аватар змейки ( one )
-		а также задаётся ограничение border
-		*/
-
-		border = snake.x + snake.width;
-
-		for (let key in snake) {
-			one[key] = snake[key]
-		}
-
-		ctx.fillRect(snake.x, snake.y, snake.width, snake.height);
-		snake.x+=counter;
-
-		//подготовка аватара к использованию 
-		snake.width = 15; //
-		snake.height = 0; //
-
-		stage = 1	//важно! в конце каждого этапа менять статус
-
-	} else if (stage === 1){			//сначало произвести расчёты.
-											//a потоп уже отрисовывать змейку
-
-		/*
-		здесь постепенно уменньшается значение аватара предыдущей змейки 
-		и увеличивается аватар нововй змейки
-		*/
-	
-		snake.x = border-15; //
-		snake.y = one.y; //
-
-		snake.height+=counter; //
-		one.x+=counter
-
-		if (one.width > border - one.x) {
-			one.width = border - one.x
-		}
-
-		ctx.fillRect(one.x, one.y, one.width, one.height);
-		ctx.fillRect(snake.x, snake.y, snake.width, snake.height); //*4
-
-		if (one.width <= 0) {
-			/*
-			когда ававтар старой змейки исчезает
-			нужно остановить перерисовку и задать значение нового аватара змейке
-			и остановить вторую фазу функции
-			*/
-
-			//for (let key in two) { snake[key] = two[key] }
-
-			stage = 'down'	//важно! в конце каждого этапа менять статус
-		}
-
-	} else if (stage === 'down') {
-		/*
-		когда все преобразования выполнены
-		выполнение переходит в штатный режим
-		*/
-		ctx.fillRect(snake.x, snake.y, snake.width, snake.height);
-		snake.y+=counter
-	}
-
-
-
-	/*
-	функция работает, поэтому по аналогии с этой функцией 
-	надо сделать и остальные
-	*/
-
-}
-
-let up = function() {
-	if (stage == 'left' || stage == 'right') {
-		border = snake.x + snake.width;
-
-		for (let key in snake) {
-			one[key] = snake[key]
-		}
-
-		ctx.fillRect(snake.x, snake.y, snake.width, snake.height);
-		snake.x+=counter;
-
-		//подготовка аватара к использованию 
-		snake.width = 15; //
-		snake.height = 0; //
-		snake.y = one.y + 15; //
-
-		stage = 1
-	} else if (stage == 1) {
-
-		snake.x = border-15; //
-		//two.y = one.y;
-
-		snake.y-=counter; //
-		snake.height+=counter //
-		//alert(`${two.y}, ${two.height}`)
-
-		one.x+=counter;
-
-		if (one.width > border - one.x) one.width = border - one.x;
-
-		ctx.fillRect(one.x, one.y, one.width, one.height);
-		ctx.fillRect(snake.x, snake.y, snake.width, snake.height); //*4
-
-		//alert('')
-
-		if (one.width <= 0) {
-			//for (let key in two) { snake[key] = two[key] }
-
-			stage = 'up'
-		}
-	} else if (stage == 'up') {
-		ctx.fillRect(snake.x, snake.y, snake.width, snake.height);
-		snake.y-=counter
-	}
-}
-
-let left = function() {
-	if (stage == 'up' || stage == 'down') {
-		for (let key in snake) {
-			one[key] = snake[key]
-		}
-
-		
-	}
-}
-
-
+	direction: 'right',//
+} ];
 
 
 let run = function() {
-	ctx.fillRect(snake.x, snake.y, snake.width, snake.height);
-	snake.x+=counter
+	//console.log(snake.length)
+
+	//последнее звено
+	switch (snake[0].direction) {
+		case 'right': //
+			snake[0].x+=counter;
+			snake[0].width-=counter;
+			break;
+		case 'top':
+			snake[0].height-=counter;
+			break;
+		case 'down':
+			snake[0].height-=counter;
+			snake[0].y+=counter;
+			break;
+		case 'left':
+			snake[0].width-=counter
+			break;
+	}
+
+	//если звено уменьшилось достаточно, то удаляем его
+	if (snake[0].width <= 0 || snake[0].height <= 0) {
+		snake.shift();
+		console.log(snake.length)
+	}
+
+	//переднее звено
+	switch (snake[snake.length-1].direction) {
+		case 'right': //
+			snake[snake.length -1].width+=counter;
+			break;
+		case 'top':
+			snake[snake.length-1].y-=counter;
+			snake[snake.length-1].height+=counter;
+			break;
+		case 'down':
+			snake[snake.length-1].height+=counter;
+			break;
+		case 'left':
+			snake[snake.length-1].x-=counter;
+			snake[snake.length-1].width+=counter;
+			break;
+	}
 }
 
 
 
+let push = function(key) {
+	switch (key) {
+		//down
+		case 40:
+			if (snake[snake.length-1].direction == 'right') { //
+				snake.push( {
+					x: snake[snake.length-1].width + snake[snake.length-1].x - 15,
+					y: snake[snake.length-1].y,
+					width: 15,
+					height: 0,
+					direction: 'down'
+				} );
+			} if (snake[snake.length-1].direction == 'left') {
+				snake.push( {
+					x: snake[snake.length-1].x,
+					y: snake[snake.length-1].y,
+					width: 15,
+					height: 0,
+					direction: 'down'
+				} )
+			}
+			break;
 
+		//top
+		case 38:
+			if (snake[snake.length-1].direction == 'right') { //
+				snake.push( {
+					x: snake[snake.length-1].width + snake[snake.length-1].x - 15,
+					y: snake[snake.length-1].y + 15,
+					width: 15,
+					height: 0,
+					direction: 'top'
+				} )
+			} if (snake[snake.length-1].direction == 'left') {
+				snake.push( {
+					x: snake[snake.length-1].x,
+					y: snake[snake.length-1].y + 15,
+					width: 15,
+					height: 0,
+					direction: 'top'
+				} )
+			}
+			break;
 
+		//right
+		case 39:
+			if (snake[snake.length-1].direction == 'down') {
+				snake.push( {
+					x: snake[snake.length-1].x,
+					y: snake[snake.length-1].y + snake[snake.length-1].height - 15,
+					width: 0,
+					height: 15,
+					direction: 'right'
+				} )
+			} if (snake[snake.length-1].direction == 'top') {
+				snake.push( {
+					x: snake[snake.length-1].x,
+					y: snake[snake.length-1].y,
+					width: 0,
+					height: 15,
+					direction: 'right'
+				} )
+			}
+			break;
+
+		//left
+		case 37:
+			if (snake[snake.length-1].direction == 'down') {
+				snake.push( {
+					x: snake[snake.length-1].x + 15,
+					y: snake[snake.length-1].y + snake[snake.length-1].height - 15,
+					width: 0,
+					height: 15,
+					direction: 'left',
+				} )
+			} if (snake[snake.length-1].direction == 'top') {
+				snake.push( {
+					x: snake[snake.length-1].x + 15,
+					y: snake[snake.length-1].y,
+					width: 0,
+					height: 15,
+					direction: 'left'
+				} )
+			}
+	}
+}
+
+let event = function(e) {
+		push(e.which)
+	}
+
+	document.addEventListener('keydown', event)
 
 
 function drawIt() { 
@@ -193,91 +175,14 @@ function drawIt() {
 
 	ctx.fillStyle = 'green';
 
+
 	
-	if (snake.x + snake.width > canvas.width) {
+	run();
 
-		let tail = ( snake.x + snake.width ) - canvas.width;
-		ctx.fillStyle = 'red';
-		ctx.fillRect(0, snake.y, tail, snake.height);
-		ctx.fillStyle = 'green';
-		
-		if (snake.x >= canvas.width) {
-			snake.x = 0;
-			snake.width += 30
-		}
-
-		/*let tail = {};
-		for (let key in snake) {
-			tail[key] = snake[key];
-		}
-
-		ctx.fillStyle = 'red';
-		ctx.fillRect(tail.x, tail.y, tail.width, tail.height);
-		tail.x+=counter;
- 		ctx.fillStyle = '3b3b3b';
- 		snake.x = 0;*/
-
- 		//run = 
- 		//snake.width = 0;
-
-
- 		//snake.x = 10;
- 	}
-
- 	if (snake.y + snake.height > canvas.height) {
- 		let tail = ( snake.y + snake.height ) - canvas.height;
- 		ctx.fillStyle = 'red';
- 		ctx.fillRect(snake.x, 0, snake.width, tail);
- 		ctx.fillStyle = 'green';
-
- 		if (snake.y >= canvas.height) {
- 			snake.y = 0;
- 		}
-
-
-
- 	}
-
- 	if (snake.y <= 0) {
- 		let tail = 0 - snake.y
- 		ctx.fillRect(snake.x, canvas.height - tail, snake.width, tail);
-
- 		if (snake.y + snake.height <= 0) {
- 			snake.y = canvas.height - snake.height
- 		}
- 	}
-
- 	if (one.y <= 0) {
- 		let tail = 0 - one.y
- 		ctx.fillRect(one.x, canvas.height - tail, one.width, tail);
-
- 		if (one.y + one.height <= 0) {
- 			one.y = canvas.height - one.height
- 		}
- 	} 
-
-	//ctx.fillStyle = 'green'; 
-
-
-
-	let event = function(e) {
-
-		switch (e.which) {
-			case 40: 
-				run = down;
-				break;
-			case 38:
-				run = up;
-				break;
-		}
-
+	for (let i = 0; i < snake.length; i++) {
+		ctx.fillRect(snake[i].x, snake[i].y, snake[i].width, snake[i].height)
 	}
-	document.addEventListener('keydown', event)
-
-	run()
-
-  	time+=counter;
 
 }
 
-window.requestAnimationFrame(drawIt)
+//window.requestAnimationFrame(drawIt)
