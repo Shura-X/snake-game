@@ -1,24 +1,18 @@
 
-/*вариант 2:
-	рисовать змейку не несколькими блокками, 
-	а монолитным прямоугольником, 
-	а при поворотах отрисовывать новый прямоугольник из точки события
-
-	зы: делать в отдельной ветке
-*/
 
 
 let canvas = document.querySelector('canvas'); 
 let ctx = canvas.getContext('2d'); 
 
 let checker = false;	//чекер для "пищи"
-let counter = 5;
-let x, y;
-//let square = {};
+let counter = 3;
+let x, y;	//координаты для цели 
+let angles;
 
 function random(max) {
   	return Math.floor(Math.random() * Math.floor(max));
 }
+
 
 let snake = [ {
 	x: 50,
@@ -28,24 +22,46 @@ let snake = [ {
 	direction: 'right',//
 } ];
 
-
+//todo
 let check_presence = function() {
 	if (!checker) {
-		x =	random(685);
-		y = random(485);
-
-		for (let i = 0; i < snake.length; i++) {
-			if ( x > snake[i].x && x < snake[i].x + snake[i].width ||
-				y > snake[i].y && y < snake[i].y + snake[i].height) {
-				check_presence()			
-			} else {
-				return;
+		while (!checker) {
+			x =	random(685);
+			y = random(485);
+		
+			checker = true
+			for (let i = 0; i < snake.length; i++) {
+				ctx.rect(snake[i].x, snake[i].y, snake[i].width, snake[i].height)
+				if ( ctx.isPointInPath(x, y) ) {
+					checker = false
+				}
 			}
-		} 
+		}
 
-		checker = true
+		//cхема см блокнот
+		//обънкт данных с координатами
+		angles = {
+			right: {
+				x: x,
+				y: y,
+			},
+
+			down: {
+				x: x + 15,
+				y: y,
+			},
+
+			left: {
+				x: x + 15,
+				y: y + 15,
+			},
+
+			top: {
+				x: x,
+				y: y + 15
+			}
+		}
 	}
-	//alert('none')
 }
 
 
@@ -99,7 +115,42 @@ let run = function() {
 	}
 }
 
+//проверяет пересечения головной змеи с целью
+let check_in = function() {
+	ctx.rect(snake[snake.length-1].x, snake[snake.length-1].y, snake[snake.length-1].width, snake[snake.length-1].height );
 
+	switch (snake[snake.length-1].direction) {
+		case 'right':
+			if ( ctx.isPointInPath(angles.right.x, angles.right.y) ) {
+				snake[snake.length-1].width += 15;
+				checker = false;
+			}
+			break;
+
+		case 'down':
+			if ( ctx.isPointInPath(angles.down.x, angles.down.y) ) {
+				snake[snake.length-1].height += 15;
+				checker = false
+			}
+			break;
+
+		case 'left':
+			if ( ctx.isPointInPath( angles.left.x, angles.left.y ) ) {
+				snake[snake.length-1].width += 15;
+				snake[snake.length-1].x -= 15;
+				checker = false;
+			}
+			break;
+
+		case 'top':
+			if ( ctx.isPointInPath( angles.top.x, angles.top.y ) ) {
+				snake[snake.length-1].height += 15;
+				snake[snake.length-1].y -= 15;
+				checker = false
+			}
+			break;
+	}
+}
 
 let push = function(key) {
 	switch (key) {
@@ -192,7 +243,11 @@ let event = function(e) {
 		push(e.which)
 	}
 
-	document.addEventListener('keydown', event)
+document.addEventListener('keydown', event)
+
+
+
+
 
 
 function drawIt() { 
@@ -257,49 +312,15 @@ function drawIt() {
 	}
 
 
-
-
-	/*if (!checker) {
-		checker = true;
-		x =	random(685);
-		y = random(485);
-
-		for (let i = 0; i < snake.length; i++) {
-			if ( x > snake[i].x && x < snake[i].x + snake[i].width ||
-				y > snake[i].y && y < snake[i].y + snake[i].height) {
-				//alert('неверно')
-			} 
-		} 
-	}*/
-
 	check_presence()
 
-	/*for (let i = 0; i < snake.length; i++) {
-		if ( x > snake[i].x && x < snake[i].x + snake[i].width ||
-			y > snake[i].y && y < snake[i].y + snake[i].height) {
+	check_in()
 
-		} 
-	}*/
-
-	/*if ( x > snake[snake.length-1].x && x < snake[snake.length-1].x + snake[snake.length-1].width ||
-		y > snake[snake.length-1].x && y < snake[snake.length-1].y + snake[snake.length-1].height ) {
-		if (snake[snake.length-1].direction == 'left' || snake[snake.length-1].direction == 'right') {
-			snake[snake.length-1].width += 15;
-		}
-		if (snake[snake.length-1].direction == 'down' || snake[snake.length-1].direction == 'top') {
-			snake[snake.length-1].height += 15
-		}
-
-		checker = false
-		//check_presence
-	}*/
 
 
 	ctx.fillStyle = 'red';
 	ctx.fillRect(x, y, 15, 15);
 	ctx.fillStyle = 'green';
-
-
 
 	for (let i = 0; i < snake.length; i++) {
 		ctx.fillRect(snake[i].x, snake[i].y, snake[i].width, snake[i].height)
