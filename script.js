@@ -11,9 +11,14 @@
 let canvas = document.querySelector('canvas'); 
 let ctx = canvas.getContext('2d'); 
 
-let time = 0;		//счётчик для итераций анимации
+let checker = false;	//чекер для "пищи"
 let counter = 5;
-//let border;
+let x, y;
+//let square = {};
+
+function random(max) {
+  	return Math.floor(Math.random() * Math.floor(max));
+}
 
 let snake = [ {
 	x: 50,
@@ -22,6 +27,26 @@ let snake = [ {
 	height: 15,
 	direction: 'right',//
 } ];
+
+
+let check_presence = function() {
+	if (!checker) {
+		x =	random(685);
+		y = random(485);
+
+		for (let i = 0; i < snake.length; i++) {
+			if ( x > snake[i].x && x < snake[i].x + snake[i].width ||
+				y > snake[i].y && y < snake[i].y + snake[i].height) {
+				check_presence()			
+			} else {
+				return;
+			}
+		} 
+
+		checker = true
+	}
+	//alert('none')
+}
 
 
 let run = function() {
@@ -60,14 +85,16 @@ let run = function() {
 		case 'top':
 			snake[snake.length-1].y-=counter;
 			snake[snake.length-1].height+=counter;
-			//alert('go')
+			
 			break;
 		case 'down':
 			snake[snake.length-1].height+=counter;
+			
 			break;
 		case 'left':
 			snake[snake.length-1].x-=counter;
 			snake[snake.length-1].width+=counter;
+			
 			break;
 	}
 }
@@ -231,10 +258,53 @@ function drawIt() {
 
 
 
+
+	/*if (!checker) {
+		checker = true;
+		x =	random(685);
+		y = random(485);
+
+		for (let i = 0; i < snake.length; i++) {
+			if ( x > snake[i].x && x < snake[i].x + snake[i].width ||
+				y > snake[i].y && y < snake[i].y + snake[i].height) {
+				//alert('неверно')
+			} 
+		} 
+	}*/
+
+	check_presence()
+
+	/*for (let i = 0; i < snake.length; i++) {
+		if ( x > snake[i].x && x < snake[i].x + snake[i].width ||
+			y > snake[i].y && y < snake[i].y + snake[i].height) {
+
+		} 
+	}*/
+
+	/*if ( x > snake[snake.length-1].x && x < snake[snake.length-1].x + snake[snake.length-1].width ||
+		y > snake[snake.length-1].x && y < snake[snake.length-1].y + snake[snake.length-1].height ) {
+		if (snake[snake.length-1].direction == 'left' || snake[snake.length-1].direction == 'right') {
+			snake[snake.length-1].width += 15;
+		}
+		if (snake[snake.length-1].direction == 'down' || snake[snake.length-1].direction == 'top') {
+			snake[snake.length-1].height += 15
+		}
+
+		checker = false
+		//check_presence
+	}*/
+
+
+	ctx.fillStyle = 'red';
+	ctx.fillRect(x, y, 15, 15);
+	ctx.fillStyle = 'green';
+
+
+
 	for (let i = 0; i < snake.length; i++) {
 		ctx.fillRect(snake[i].x, snake[i].y, snake[i].width, snake[i].height)
 	}
 
 }
 
-//window.requestAnimationFrame(drawIt)
+window.requestAnimationFrame(drawIt)
