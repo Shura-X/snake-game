@@ -12,7 +12,7 @@ let canvas = document.querySelector('canvas');
 let ctx = canvas.getContext('2d'); 
 
 let time = 0;		//счётчик для итераций анимации
-let counter = 3;
+let counter = 5;
 //let border;
 
 let snake = [ {
@@ -47,6 +47,7 @@ let run = function() {
 
 	//если звено уменьшилось достаточно, то удаляем его
 	if (snake[0].width <= 0 || snake[0].height <= 0) {
+		//alert('Left coordinate: ' + snake[0].x + ' width:' + snake[0].width)
 		snake.shift();
 		console.log(snake.length)
 	}
@@ -59,6 +60,7 @@ let run = function() {
 		case 'top':
 			snake[snake.length-1].y-=counter;
 			snake[snake.length-1].height+=counter;
+			//alert('go')
 			break;
 		case 'down':
 			snake[snake.length-1].height+=counter;
@@ -108,7 +110,7 @@ let push = function(key) {
 			} if (snake[snake.length-1].direction == 'left') {
 				snake.push( {
 					x: snake[snake.length-1].x,
-					y: snake[snake.length-1].y + 15,
+					y: snake[snake.length-1].y, //+ 15,
 					width: 15,
 					height: 0,
 					direction: 'top'
@@ -179,10 +181,60 @@ function drawIt() {
 	
 	run();
 
+	//right
+	if (snake[snake.length-1].x + snake[snake.length-1].width >= canvas.width && snake[snake.length-1].direction == 'right') {
+		snake.push( {
+			x: 0,
+			y: snake[snake.length-1].y,
+			width: 0,
+			height: 15,
+			direction: snake[snake.length-1].direction
+		} );
+	}
+
+	//left
+	if ( snake[snake.length-1].x < 0 && snake[snake.length-1].direction == 'left') {
+		//alert( snake[snake.length-1].x );
+		snake.push( {
+			x: canvas.width,
+			y: snake[snake.length-1].y,
+			width: 0,
+			height: 15,
+			direction: snake[snake.length-1].direction
+		} );
+		//alert('right')
+		//alert( snake[snake.length-1].x );
+		//alert( snake.length )
+	}
+
+	//down
+	if (snake[snake.length-1].y + snake[snake.length-1].height >= canvas.height && snake[snake.length-1].direction == 'down') {
+		snake.push( {
+			x: snake[snake.length-1].x,
+			y: 0,
+			width: 15,
+			height: 0,
+			direction: snake[snake.length-1].direction,
+		} )
+	}
+
+	//top
+	if ( snake[snake.length-1].y <= 0 && snake[snake.length-1].direction == 'top') {
+		snake.push( {
+			x: snake[snake.length-1].x,
+			y: canvas.height,
+			width: 15,
+			height: 0,
+			direction: snake[snake.length-1].direction
+		} );
+	}
+
+
+
 	for (let i = 0; i < snake.length; i++) {
 		ctx.fillRect(snake[i].x, snake[i].y, snake[i].width, snake[i].height)
 	}
 
 }
 
-window.requestAnimationFrame(drawIt)
+//window.requestAnimationFrame(drawIt)
