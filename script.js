@@ -16,7 +16,7 @@ function random(max) {
 
 let snake = [ {
 	x: 50,
-	y: 450,
+	y: 50,
 	width: 120,
 	height: 15,
 	direction: 'right',//
@@ -25,9 +25,11 @@ let snake = [ {
 //todo
 let check_presence = function() {
 	if (!checker) {
+		let count = 0;
 		while (!checker) {
 			x =	random(685);
 			y = random(485);
+			count++
 		
 			checker = true
 			for (let i = 0; i < snake.length; i++) {
@@ -36,7 +38,7 @@ let check_presence = function() {
 					checker = false
 				}
 			}
-		}
+		} console.log(count)
 
 		//cхема см блокнот
 		//обънкт данных с координатами
@@ -121,21 +123,24 @@ let check_in = function() {
 
 	switch (snake[snake.length-1].direction) {
 		case 'right':
-			if ( ctx.isPointInPath(angles.right.x, angles.right.y) ) {
+			if ( ctx.isPointInPath(angles.right.x, angles.right.y) ||
+				ctx.isPointInPath(angles.top.x, angles.top.y) ) {
 				snake[snake.length-1].width += 15;
 				checker = false;
 			}
 			break;
 
 		case 'down':
-			if ( ctx.isPointInPath(angles.down.x, angles.down.y) ) {
+			if ( ctx.isPointInPath(angles.down.x, angles.down.y) ||
+				ctx.isPointInPath( angles.right.x, angles.right.y )) {
 				snake[snake.length-1].height += 15;
-				checker = false
+				checker = false;
 			}
 			break;
 
 		case 'left':
-			if ( ctx.isPointInPath( angles.left.x, angles.left.y ) ) {
+			if ( ctx.isPointInPath( angles.left.x, angles.left.y ) ||
+				ctx.isPointInPath( angles.down.x, angles.down.y )) {
 				snake[snake.length-1].width += 15;
 				snake[snake.length-1].x -= 15;
 				checker = false;
@@ -143,10 +148,11 @@ let check_in = function() {
 			break;
 
 		case 'top':
-			if ( ctx.isPointInPath( angles.top.x, angles.top.y ) ) {
+			if ( ctx.isPointInPath( angles.top.x, angles.top.y ) ||
+				ctx.isPointInPath( angles.left.x, angles.left.y )) {
 				snake[snake.length-1].height += 15;
 				snake[snake.length-1].y -= 15;
-				checker = false
+				checker = false;
 			}
 			break;
 	}
@@ -326,6 +332,8 @@ function drawIt() {
 		ctx.fillRect(snake[i].x, snake[i].y, snake[i].width, snake[i].height)
 	}
 
+	//console.log(snake[snake.length-1].height)
+
 }
 
-window.requestAnimationFrame(drawIt)
+//window.requestAnimationFrame(drawIt)
