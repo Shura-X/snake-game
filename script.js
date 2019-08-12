@@ -1,5 +1,9 @@
 
-
+/*
+в этой ветке проверяеется 1 угол цели и 1 передний угол головы
+задачи:
+-сделать в разных директориях разные углы (не только х)
+*/
 
 let canvas = document.querySelector('canvas'); 
 let ctx = canvas.getContext('2d'); 
@@ -22,7 +26,7 @@ let snake = [ {
 	direction: 'right',//
 } ];
 
-//todo
+
 let check_presence = function() {
 	if (!checker) {
 		let count = 0;
@@ -44,6 +48,7 @@ let check_presence = function() {
 
 		//cхема см блокнот
 		//обънкт данных с координатами
+		// вэтой ветке проверяет только один угол
 		angles = {
 			right: {
 				x: x,
@@ -121,14 +126,16 @@ let run = function() {
 
 //проверяет пересечения головной змеи с целью
 let check_in = function() {
-	//рисует очертания фигуры головной змейки
-	ctx.rect( snake[snake.length-1].x, snake[snake.length-1].y, snake[snake.length-1].width, snake[snake.length-1].height );
+	//в этой ветке сравнивается угол головы с углом цели
+	//ctx.rect( snake[snake.length-1].x, snake[snake.length-1].y, snake[snake.length-1].width, snake[snake.length-1].height );
+	let last = snake[snake.length-1];
 
 	switch (snake[snake.length-1].direction) {
 		//проверяет, есть ли точки угла в прямоугольнике змеи
+		//предположение - ошибка в condition
 		case 'right':
-			if ( ctx.isPointInPath(angles.right.x, angles.right.y) ||
-				ctx.isPointInPath(angles.top.x, angles.top.y) ) {
+			if ( last.y == angles.right.y &&
+			(last.x - angles.right.x < 7 && last.x - angles.right.x > -7) ) {
 				checker = false;
 				snake[snake.length-1].width += 15;
 				alert('check')
@@ -136,8 +143,8 @@ let check_in = function() {
 			break;
 
 		case 'down':
-			if ( ctx.isPointInPath(angles.down.x, angles.down.y) ||
-				ctx.isPointInPath( angles.right.x, angles.right.y )) {
+			if ( last.y == angles.down.y &&
+			(last.x - angles.down.x < 7 && last.x - angles.down.x > -7) ) {
 				checker = false;
 				snake[snake.length-1].height += 15;
 				alert('check')
@@ -145,8 +152,8 @@ let check_in = function() {
 			break;
 
 		case 'left':
-			if ( ctx.isPointInPath( angles.left.x, angles.left.y ) ||
-				ctx.isPointInPath( angles.down.x, angles.down.y )) {
+			if ( last.y == angles.left.y &&
+			(last.x - angles.left.x < 7 && last.x - angles.left.x > -7) ) {
 				checker = false;
 				snake[snake.length-1].width += 15;
 				snake[snake.length-1].x -= 15;
@@ -155,8 +162,8 @@ let check_in = function() {
 			break;
 
 		case 'top':
-			if ( ctx.isPointInPath( angles.top.x, angles.top.y ) ||
-				ctx.isPointInPath( angles.left.x, angles.left.y )) {
+			if ( last.y == angles.top.y &&
+			(last.x - angles.top.x < 7 && last.x - angles.top.x > -7) ) {
 				checker = false;
 				snake[snake.length-1].height += 15;
 				snake[snake.length-1].y -= 15;
