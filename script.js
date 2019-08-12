@@ -185,4 +185,4 @@ function drawIt() {
 
 }
 
-//window.requestAnimationFrame(drawIt)
+window.requestAnimationFrame(drawIt)
