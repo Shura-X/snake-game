@@ -40,7 +40,14 @@ let check_presence = function() {
 				ctx.rect(snake[i].x, snake[i].y, snake[i].width, snake[i].height)
 				if ( ctx.isPointInPath(x, y) ) {
 					checker = false
+				} else if ( ctx.isPointInPath(x+15, y) ) {
+					checker = false
+				} else if ( ctx.isPointInPath(x, y+15) ) {
+					checker = false
+				} else if ( ctx.isPointInPath(x+15, y+15) ) {
+					checker = false
 				}
+				ctx.clearRect(snake[i].x, snake[i].y, snake[i].width, snake[i].height)
 			}
 		} 
 
@@ -70,9 +77,40 @@ let check_presence = function() {
 				y: y + 15
 			}
 		}
+
+		//alert(angles.right.x)
 	}
 }
 
+
+let check_loop = function() {
+	let last = snake[snake.length-1];
+
+	
+	for (let i = 0; i < snake.length; i++) {
+		ctx.fillStyle = 'yellow';
+		//ctx.beginPath()
+		ctx.rect(snake[i].x, snake[i].y, snake[i].width, snake[i].height);
+
+		/*
+		идея правильная, реализация плохая
+		*/
+
+		switch (last.direction) {
+			case 'right':
+				let right = last.x + last.width + 1
+				if ( (right >= snake[i].x && right <= snake[i].x + snake[i].width) &&
+				(last.y >= snake[i].y && last.y <= snake[i].x + snake[i].width) ) {
+					alert(last.x+last.width+1 + ', ' + last.y)
+					alert(snake[i].x + ', ' + snake[i].y + ', ' + snake[i].width + ', ' + snake[i].height);
+					ctx.fill()
+				} else if ( ctx.isPointInPath(last.x+last.width+1, last.y+15) ) {
+					//alert('test')//window.location.reload()
+				}
+				break;
+		}
+	}
+}
 
 let run = function() {
 	//console.log(snake.length)
@@ -130,48 +168,49 @@ let check_in = function() {
 	//ctx.rect( snake[snake.length-1].x, snake[snake.length-1].y, snake[snake.length-1].width, snake[snake.length-1].height );
 	let last = snake[snake.length-1];
 
+	//console.log(last.x + last.width);
+	//console.log(angles.right.x)
+
+
 	switch (snake[snake.length-1].direction) {
 		//проверяет, есть ли точки угла в прямоугольнике змеи
 		//предположение - ошибка в condition
-		case 'right':
-			if ( last.y == angles.right.y &&
-			(last.x - angles.right.x < 7 && last.x - angles.right.x > -7) ) {
+		case 'right': 
+			if ( ( last.x + last.width >= angles.right.x && last.x + last.width <= angles.right.x + 15 ) &&
+			(last.y - angles.right.y < 15 && last.y - angles.right.y > -15) ) {								
 				checker = false;
 				snake[snake.length-1].width += 15;
-				alert('check')
 			}
 			break;
 
-		case 'down':
-			if ( last.y == angles.down.y &&
-			(last.x - angles.down.x < 7 && last.x - angles.down.x > -7) ) {
+		case 'down': 
+			if ( ( last.y + last.height >= angles.down.y && last.y + last.height <= angles.down.y + 15 ) &&
+			(last.x + last.width - angles.down.x < 15 && last.x + last.width - angles.down.x > -15) ) {
 				checker = false;
 				snake[snake.length-1].height += 15;
-				alert('check')
 			}
 			break;
 
-		case 'left':
-			if ( last.y == angles.left.y &&
-			(last.x - angles.left.x < 7 && last.x - angles.left.x > -7) ) {
+		case 'left': 
+			if ( ( last.x <= angles.left.x && last.x >= angles.left.x - 15 ) &&
+			(last.y + 15 - angles.left.y < 15 && last.y + 15 - angles.left.y > -15) ) {
 				checker = false;
 				snake[snake.length-1].width += 15;
 				snake[snake.length-1].x -= 15;
-				alert('check')
 			}
 			break;
 
 		case 'top':
-			if ( last.y == angles.top.y &&
-			(last.x - angles.top.x < 7 && last.x - angles.top.x > -7) ) {
+			if ( ( last.y <= angles.top.y && last.y >= angles.top.y - 15 ) &&
+			(last.x - angles.top.x < 15 && last.x - angles.top.x > -15) ) {
 				checker = false;
 				snake[snake.length-1].height += 15;
 				snake[snake.length-1].y -= 15;
-				alert('check')
 			}
 			break;
 	}
 }
+
 
 let push = function(key) {
 	switch (key) {
@@ -221,7 +260,7 @@ let push = function(key) {
 		case 39:
 			if (snake[snake.length-1].direction == 'down') {
 				snake.push( {
-					x: snake[snake.length-1].x,
+					x: snake[snake.length-1].x+15,
 					y: snake[snake.length-1].y + snake[snake.length-1].height - 15,
 					width: 0,
 					height: 15,
@@ -229,7 +268,7 @@ let push = function(key) {
 				} )
 			} if (snake[snake.length-1].direction == 'top') {
 				snake.push( {
-					x: snake[snake.length-1].x,
+					x: snake[snake.length-1].x+15,
 					y: snake[snake.length-1].y,
 					width: 0,
 					height: 15,
@@ -271,15 +310,11 @@ document.addEventListener('keydown', event)
 
 
 
+
+
 function drawIt() { 
 	window.requestAnimationFrame(drawIt);  
  	ctx.clearRect(0,0,canvas.width,canvas.height); 
- 	
- 	ctx.fillStyle = "#3b3b3b"; 
-	ctx.fillRect(0, 0, 700, 500); 
-
-	ctx.fillStyle = 'green';
-
 
 	
 	run();
@@ -296,6 +331,8 @@ function drawIt() {
 	check_in()
 
 	check_presence()
+
+
 
 	//right
 	if (snake[snake.length-1].x + snake[snake.length-1].width >= canvas.width && snake[snake.length-1].direction == 'right') {
@@ -346,8 +383,14 @@ function drawIt() {
 	}
 
 
+	check_loop()
 
 
+
+
+	ctx.fillStyle = "#3b3b3b"; 
+	ctx.fillRect(0, 0, 700, 500); 
+	ctx.fillStyle = 'green';
 
 	if (checker) {
 		ctx.fillStyle = 'red';
