@@ -87,25 +87,69 @@ let check_loop = function() {
 	let last = snake[snake.length-1];
 
 	
-	for (let i = 0; i < snake.length; i++) {
+	for (let i = 0; i < snake.length-2; i++) {
 		ctx.fillStyle = 'yellow';
-		//ctx.beginPath()
 		ctx.rect(snake[i].x, snake[i].y, snake[i].width, snake[i].height);
 
 		/*
-		идея правильная, реализация плохая
+		идея правильная, реализация плохая. пересмотреть
 		*/
 
 		switch (last.direction) {
 			case 'right':
-				let right = last.x + last.width + 1
+				let right = last.x + last.width;	//расстояние от края до правой стороны
+
 				if ( (right >= snake[i].x && right <= snake[i].x + snake[i].width) &&
-				(last.y >= snake[i].y && last.y <= snake[i].x + snake[i].width) ) {
-					alert(last.x+last.width+1 + ', ' + last.y)
-					alert(snake[i].x + ', ' + snake[i].y + ', ' + snake[i].width + ', ' + snake[i].height);
-					ctx.fill()
-				} else if ( ctx.isPointInPath(last.x+last.width+1, last.y+15) ) {
+				(last.y >= snake[i].y && last.y <= snake[i].y + snake[i].height) ) {
+					//alert(last.x+last.width+1 + ', ' + last.y)
+					//alert(snake[i].x + ', ' + snake[i].y + ', ' + snake[i].width + ', ' + snake[i].height);
+					//ctx.fill()
+					alert('You lose!')
+					window.location.reload()
+				} else if ( (right >= snake[i].x && right <= snake[i].x + snake[i].width) &&
+				(last.y+15 >= snake[i].y && last.y+15 <= snake[i].y + snake[i].height) ) {
 					//alert('test')//window.location.reload()
+					alert('You lose!');
+					window.location.reload()
+				}
+				break;
+
+			case 'down':
+				let down = last.y + last.height; //+ 1;
+
+				if ( (down >= snake[i].y && down <= snake[i].y + snake[i].height) &&
+				(last.x >= snake[i].x && last.x <= snake[i].x + snake[i].width) ) {
+					alert('You lose!');
+					window.location.reload()
+				} else if ( (down >= snake[i].y && down <= snake[i].y + snake[i].height) &&
+				(last.x+15 >= snake[i].x && last.x+15 <= snake[i].x + snake[i].width) ) {
+					alert('You lose!');
+					window.location.reload();
+				}
+				break;
+
+			case 'top':
+				if ( (last.y >= snake[i].y && last.y <= snake[i].y + snake[i].height) && 
+					(last.x >= snake[i].x && last.x <= snake[i].x + snake[i].width) ) {
+					alert('You lose!');
+					window.location.reload()
+				} else if ( (last.y >= snake[i].y && last.y <= snake[i].y + snake[i].height) && 
+					(last.x+15 >= snake[i].x && last.x+15 <= snake[i].x + snake[i].width) ) {
+					alert('You lose!');
+					window.location.reload()
+				}
+				break;
+
+			case 'left':
+
+				if ( (last.x >= snake[i].x && last.x <= snake[i].x + snake[i].width) &&
+					(last.y >= snake[i].y && last.y <= snake[i].y + snake[i].height) ) {
+					alert('You lose!');
+					window.location.reload()
+				} else if ( (last.x >= snake[i].x && last.x <= snake[i].x + snake[i].width) &&
+					(last.y+15 >= snake[i].y && last.y+15 <= snake[i].y + snake[i].height) ) {
+					alert('You lose!');
+					window.location.reload()
 				}
 				break;
 		}
@@ -219,7 +263,7 @@ let push = function(key) {
 			if (snake[snake.length-1].direction == 'right') { //
 				snake.push( {
 					x: snake[snake.length-1].width + snake[snake.length-1].x - 15,
-					y: snake[snake.length-1].y,
+					y: snake[snake.length-1].y+15,
 					width: 15,
 					height: 0,
 					direction: 'down'
@@ -227,7 +271,7 @@ let push = function(key) {
 			} if (snake[snake.length-1].direction == 'left') {
 				snake.push( {
 					x: snake[snake.length-1].x,
-					y: snake[snake.length-1].y,
+					y: snake[snake.length-1].y+15,
 					width: 15,
 					height: 0,
 					direction: 'down'
@@ -240,7 +284,7 @@ let push = function(key) {
 			if (snake[snake.length-1].direction == 'right') { //
 				snake.push( {
 					x: snake[snake.length-1].width + snake[snake.length-1].x - 15,
-					y: snake[snake.length-1].y + 15,
+					y: snake[snake.length-1].y, //+ 15,
 					width: 15,
 					height: 0,
 					direction: 'top'
@@ -248,7 +292,7 @@ let push = function(key) {
 			} if (snake[snake.length-1].direction == 'left') {
 				snake.push( {
 					x: snake[snake.length-1].x,
-					y: snake[snake.length-1].y, //+ 15,
+					y: snake[snake.length-1].y, //+ 15, //+ 15,
 					width: 15,
 					height: 0,
 					direction: 'top'
@@ -281,7 +325,7 @@ let push = function(key) {
 		case 37:
 			if (snake[snake.length-1].direction == 'down') {
 				snake.push( {
-					x: snake[snake.length-1].x + 15,
+					x: snake[snake.length-1].x,
 					y: snake[snake.length-1].y + snake[snake.length-1].height - 15,
 					width: 0,
 					height: 15,
@@ -289,7 +333,7 @@ let push = function(key) {
 				} )
 			} if (snake[snake.length-1].direction == 'top') {
 				snake.push( {
-					x: snake[snake.length-1].x + 15,
+					x: snake[snake.length-1].x,
 					y: snake[snake.length-1].y,
 					width: 0,
 					height: 15,
