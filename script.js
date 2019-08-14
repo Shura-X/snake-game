@@ -344,7 +344,10 @@ let push = function(key) {
 }
 
 let event = function(e) {
-		push(e.which)
+		if ( snake[snake.length-1].width > 15 ||
+			snake[snake.length-1].height > 15 ) {
+			push(e.which)
+		}
 	}
 
 document.addEventListener('keydown', event)
